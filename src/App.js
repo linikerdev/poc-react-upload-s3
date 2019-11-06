@@ -1,26 +1,49 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react'
+import styled from 'styled-components'
+import axios from 'axios'
+const Box = styled.section`
+  padding: 4em;
+  background: papayawhip;
+`
 
-function App() {
+function App () {
+  const [pictures, setPictures] = useState([])
+
+  const onChangePicture = e => {
+    if (e.target.files.length > 0) {
+      const { files } = e.target
+      const fileList = Object.values(files)
+      fileList.map(async file => {
+        const url =
+          'https://unicorn-frontend.s3.amazonaws.com/teste/globo.jpeg?AWSAccessKeyId=AKIA6BAZFILS72QASHPJ&Expires=1573013875&Signature=0SXpQG3iUCBZFFXft7nfR7jDNCw%3D'
+
+        const config = {
+          headers: {
+            'Content-Type': 'image/*'
+          },
+          onUploadProgress: progressEvent => console.log(progressEvent.loaded)
+        }
+        const up = await axios.put(url, file, {
+          headers: {
+            'Content-Type': file.type
+          }
+        })
+        console.log(up)
+
+        // setPictures([...pictures, file])
+      })
+      // setPictures([...f)
+    }
+  }
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <Box>
+      <h1>Thomas Baby</h1>
+      <input name='' type='file' onChange={onChangePicture} multiple />
+      {pictures.map((f, i) => (
+        <div key={i}>{f.name}</div>
+      ))}
+    </Box>
+  )
 }
 
-export default App;
+export default App
