@@ -13,26 +13,26 @@ function App () {
     if (e.target.files.length > 0) {
       const { files } = e.target
       const fileList = Object.values(files)
-      fileList.map(async file => {
-        const url =
-          'https://unicorn-frontend.s3.amazonaws.com/teste/globo.jpeg?AWSAccessKeyId=AKIA6BAZFILS72QASHPJ&Expires=1573013875&Signature=0SXpQG3iUCBZFFXft7nfR7jDNCw%3D'
-
-        const config = {
-          headers: {
-            'Content-Type': 'image/*'
-          },
-          onUploadProgress: progressEvent => console.log(progressEvent.loaded)
-        }
-        const up = await axios.put(url, file, {
-          headers: {
-            'Content-Type': file.type
-          }
-        })
-        console.log(up)
-
-        // setPictures([...pictures, file])
+      fileList.map(file => {
+        axios
+          .post('http://localhost:3333/api/v1/manager/pages', {
+            image: file.name
+          })
+          .then(async ({ data }) => {
+            const up = await axios.put(data.data, file, {
+              headers: {
+                'Content-Type': file.type
+              },
+              onUploadProgress: function (progressEvent) {
+                var percentCompleted = Math.round(
+                  (progressEvent.loaded * 100) / progressEvent.total
+                )
+                console.log(percentCompleted)
+              }
+            })
+            console.log('state: ', up)
+          })
       })
-      // setPictures([...f)
     }
   }
   return (
